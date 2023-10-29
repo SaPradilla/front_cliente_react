@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { Fragment } from 'react';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+// Componentes
+import Header from './components/layout/Header';
+import NavBar from './components/layout/BarraNavegacion';
+import Clientes from './components/clientes/Clientes';
+import NuevoCliente from './components/clientes/NuevoCliente';
+import Pedidos from './components/pedidos/Pedidos';
+import Productos from './components/productos/Productos';
+import NuevoProducto from './components/productos/NuevoProducto';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+    <Fragment>
+      <Header/>
+      <div className='grid contenedor contenido-principal'>
+        <NavBar/>
+        <main className="caja-contenido col-9">
+          <Routes>
+          <Route exact path="/" element={<Clientes />}/>
+          <Route exact path="/nuevo-cliente" element={<NuevoCliente />}/>
+            
+          
+          <Route exact path="/pedidos" element={<Pedidos />}/>
+            
+        
+          <Route exact path="/productos" element={<Productos />}/>
+          <Route exact path="/nuevo-producto" element={<NuevoProducto />}/>
+
+         
+          </Routes>
+        </main>
+      </div>
+    </Fragment>
+    </Router>
+ );
 }
 
 export default App;
