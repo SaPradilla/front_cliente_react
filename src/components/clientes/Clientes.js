@@ -1,22 +1,35 @@
 import React from "react";
+import clienteAxios from "../../config/axios";
 import { NavLink } from 'react-router-dom'
+import { useEffect, useState } from "react";
 
-const clientes = [
-    {
-      nombre: 'Diego Marin Cano',
-      empresa: 'Sena',
-      correo: 'correo@correo.com',
-      telefono: '209109310',
-    },
-    {
-        nombre: 'Diego Marin Cano',
-        empresa: 'Sena',
-        correo: 'correo@correo.com',
-        telefono: '209109310',
-      }
-  ];
+
+// const clientes = [
+//     {
+//       nombre: 'Diego Marin Cano',
+//       empresa: 'Sena',
+//       correo: 'correo@correo.com',
+//       telefono: '209109310',
+//     },
+//     {
+//         nombre: 'Diego Marin Cano',
+//         empresa: 'Sena',
+//         correo: 'correo@correo.com',
+//         telefono: '209109310',
+//       }
+//   ];
+
+
 
 function Clientes() {
+    const [clientes,datosCliente] = useState([]);
+    const consultaApi = async () =>{
+        const consultar = await clienteAxios.get('/clientes')
+        datosCliente(consultar.data)
+    }
+    useEffect(()=>{
+        consultaApi()
+    }, []);
     return (
         <div>
             <h2>Clientes</h2>
