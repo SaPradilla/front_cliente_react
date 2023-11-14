@@ -451,3 +451,11 @@ h3.resumen-titulo {
 .login .contenedor-formulario {
 
 }
+.contenedorUpdate{
+    display: flex;
+    flex-direction: column;
+}
+img.image-product {
+    height: 100px ;
+    width: 100px ;
+}
