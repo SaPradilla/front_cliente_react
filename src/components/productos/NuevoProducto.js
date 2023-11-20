@@ -14,7 +14,6 @@ function NuevoProducto() {
     });
     const actualizarState = (e) => {
         const { name, type } = e.target;
-      
         guardarProducto((prevProducto) => ({
           ...prevProducto,
           [name]: type === 'file' ? e.target.files[0] : e.target.value,
@@ -47,7 +46,7 @@ function NuevoProducto() {
                  text:'El cliente ya esta Registrado',
                  timer: 1500,
                  confirmButtonColor: "#66bb6a",
-                 
+
                 })
                 return
              }

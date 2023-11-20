@@ -9,48 +9,72 @@ function EditarPedido() {
     const navigate = useNavigate();
     const {id} = useParams();
 
-    const [pedido, guardarPedido] = useState({});
+    const [pedido, datosPedido] = useState({
+        cliente: '',
+        pedido: [],
+        total: null
+    });
+    const [clienteAnterior,datosClienteAnterior] = useState({})
+    // const [nuevoPedido,guardarNuevoPedido] = useState({
+    //     cliente: '',
+    //     productos: [],
+    //     total: null
+    // })
     
     const [clientes, datosCliente] = useState([]);
+    
     const [productos, datosProductos] = useState([]);
+    
+    const [productosDisponibles,datosProductosDisponibles] = useState([])
 
-    // const actualizarState = a => {
-    //     const { name, value } = a.target;
-    //     guardarPedido({
-    //         // Copia del state
-    //         ...pedido,
-    //         [name]: value,
+    const validarDisponibles = () =>{
+        const productosDisponibles = productos.filter((producto) => {
+            // Verificar si el producto no está en el array de pedido.pedido
+            const noEstaEnPedido = !pedido.pedido.some((productoPedido) => productoPedido.nombre === producto.nombre);
+            
+            return noEstaEnPedido;
+          });
+        
+          datosProductosDisponibles(productosDisponibles);
+    }
 
-    //     })
-    // }
-    // const handleProductosChange = (selectedOptions) => {
-    //     guardarPedido({
-    //         ...pedido,
-    //         productos: selectedOptions.map((producto) => ({
-    //             ...producto,
-    //             cantidad: 1, // Inicializamos la cantidad en 1 por defecto
-    //         })),
-    //     });
-    // };
-    // const handleCantidadChange = (index, cantidad) => {
-    //     const nuevosProductos = [...pedido.productos];
-    //     nuevosProductos[index].cantidad = cantidad;
-    //     guardarPedido({
-    //         ...pedido,
-    //         productos: nuevosProductos,
-    //     });
-    // };
+    const actualizarState = a => {
+        const { name, value } = a.target;
+        datosPedido({
+            // Copia del state
+            ...pedido,
+            [name]: value,
 
-    // const calcularTotal = () => {
-    //     const total = pedido.productos.reduce(
-    //         (acumulador, producto) => acumulador + producto.cantidad * producto.precio,
-    //         0
-    //     );
-    //     guardarPedido({
-    //         ...pedido,
-    //         total,
-    //     });
-    // };
+        })
+    }
+    const handleProductosChange = (selectedOptions) => {
+        datosPedido({
+            ...pedido,
+            pedido: selectedOptions.map((producto) => ({
+                ...producto,
+                cantidad: 1, // Inicializamos la cantidad en 1 por defecto
+            })),
+        });
+    };
+    const handleCantidadChange = (index, cantidad) => {
+        const nuevosProductos = [...pedido.productos];
+        nuevosProductos[index].cantidad = cantidad;
+        datosPedido({
+            ...pedido,
+            productos: nuevosProductos,
+        });
+    };
+
+    const calcularTotal = () => {
+        const total = pedido.pedido.reduce(
+            (acumulador, producto) => acumulador + producto.cantidad * producto.precio,
+            0
+        );
+        datosPedido({
+            ...pedido,
+            total,
+        });
+    };
 
     const agregarPedido = async (a) => {
         a.preventDefault()
@@ -94,59 +118,114 @@ function EditarPedido() {
         }
     }
 
-    const consultarClientes = async () => {
+    const consultar= async () => {
+
+        const productosApi = await clienteAxios.get('/productos')
+        datosProductos(productosApi.data)
+
         const clientesApi = await clienteAxios.get('/clientes')
         datosCliente(clientesApi.data)
-        const pedidosApi = await clienteAxios.get('/productos')
-        datosProductos(pedidosApi.data)
+
+        const pedidoApi = await clienteAxios.get(`/pedidos/${id}`)
+
+        const productosPedidoFormat = pedidoApi.data.Pedido.pedido.map((productoPedido) => ({
+            value: productoPedido.producto._id,
+            label: `${productoPedido.producto.nombre} $${productoPedido.producto.precio}`,
+            cantidad: productoPedido.cantidad,
+          }));
+          
+          datosPedido({
+            ...pedidoApi.data.Pedido,
+            pedido: productosPedidoFormat,
+          });
+
+          datosClienteAnterior(pedidoApi.data.Pedido.cliente)
+
+        // console.log(pedidoApi.data)
+        console.log(pedido)
+        console.log(productosApi.data)
+
     }
 
 
     useEffect(() => {
-        consultarClientes()
+        consultar()
+        validarDisponibles()
     }, []);
 
-    useEffect(()=>{
-        const consultaApi = async () =>{
-            const consultar = await clienteAxios.get(`/pedidos/${id}`)
-            guardarPedido(consultar.data.Pedido)
-        }
-        consultaApi()
-    },[])
-    // useEffect(() => {
-    //     calcularTotal();
-    // }, [pedido.productos]);
+    // useEffect(()=>{
+    //     const consultaApi = async () =>{
+    //         const consultar = await clienteAxios.get(`/pedidos/${id}`)
+    //         datosPedido(consultar.data.Pedido)
+    //     }
+    //     consultaApi()
+    // },[])
+    useEffect(() => {
+        calcularTotal();
+    }, [pedido.pedido]);
     return (
         <div>
-            <h2>Nuevo Pedido</h2>
+            <h2>Editar Pedido</h2>
 
             <form onSubmit={agregarPedido}>
                 <legend>Llena todos los campos</legend>
 
                 <div className="campo">
-
-                    <label>Cliente:</label>
-
-                    <select value={pedido.cliente}  name="cliente">
-                        {/* <option value={pedido.cliente._id} selected> {pedido.cliente.nombre} {pedido.cliente.apellido}</option>
-                        {clientes.map((cliente) => (
-                            <option key={cliente._id} value={cliente._id}>
-                                {cliente.nombre} {cliente.apellido}
+                    <div>
+                        
+                        <label>Cliente:</label>
+                    
+                        <select name="cliente">
+   
+                            <option selected value="" disabled>
+                                {`${clienteAnterior.nombre} `}  {`${clienteAnterior.apellido} `}
                             </option>
-                        ))}
-                              <Select
-                        options={clientes.map((cliente) => ({
+                                
+                        </select>
+                    </div>
+                    <div>
+                        
+                        <label>Nuevo Cliente:</label>
+
+                        <select value={pedido.cliente} onChange={actualizarState} name="cliente">
+                            <option value="">-- Seleccione --</option>
+                            {clientes.map((cliente) => (
+                                <option key={cliente._id} value={cliente._id}>
+                                    {cliente.nombre} {cliente.apellido}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    
+                    
+                </div>
+                <div className="campo">
+                    <label>Producto:</label>
+                
+                    <Select
+                        options={
+                            productos.map((producto) => ({
                             value: producto._id,
                             label: `${producto.nombre} $${producto.precio}`,
                             precio: producto.precio,
                         }))}
-                        value={selectedOption}
-                        onChange={handleChange}
-                    /> */}
 
-                    </select>
+                        value={pedido.pedido}
+                        onChange={handleProductosChange}
+                        isMulti
+                    />
+
                 </div>
-
+                {pedido.pedido.map((producto, index) => (
+                <div key={index} className="campo">
+                    <label>Cantidad para {producto.label}:</label>
+                    <input
+                    type="number"
+                    value={producto.cantidad}
+                    onChange={(e) => handleCantidadChange(index, e.target.value)}
+                    />
+                </div>
+                ))}
                 {/* <div className="campo">
                     <label>Producto:</label>
                     

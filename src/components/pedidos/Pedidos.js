@@ -15,7 +15,7 @@ function Pedidos() {
   return (
     <div>
 
-      <h2>Productos</h2>
+      <h2>Pedidos</h2>
       <NavLink to="/nuevo-pedido" className="btn btn-verde nvo-cliente">
         <i className="fas fa-plus-circle"></i>
         Nuevo Pedido

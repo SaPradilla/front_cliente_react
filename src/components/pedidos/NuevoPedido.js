@@ -29,7 +29,7 @@ function NuevoPedido() {
             ...pedido,
             productos: selectedOptions.map((producto) => ({
                 ...producto,
-                cantidad: 1, // Inicializamos la cantidad en 1 por defecto
+                cantidad: 1,
             })),
         });
     };
@@ -128,17 +128,18 @@ function NuevoPedido() {
 
                     <select value={pedido.cliente} onChange={actualizarState} name="cliente">
                         <option value="">-- Seleccione --</option>
-                        {clientes.map((cliente) => (
-                            <option key={cliente._id} value={cliente._id}>
-                                {cliente.nombre} {cliente.apellido}
-                            </option>
-                        ))}
+                            {clientes.map((cliente) => (
+                                <option key={cliente._id} value={cliente._id}>
+                                    {cliente.nombre} {cliente.apellido}
+                                </option>
+                            ))}
+
                     </select>
                 </div>
 
                 <div className="campo">
                     <label>Producto:</label>
-                
+
                     <Select
                         options={productos.map((producto) => ({
                             value: producto._id,
@@ -150,7 +151,7 @@ function NuevoPedido() {
                         isMulti
                     />
                 </div>
-                {pedido.productos.map((producto, index) => (
+                    {pedido.productos.map((producto, index) => (
                     <div key={index} className="campo">
                         <label>Cantidad para {producto.label}:</label>
                         <input

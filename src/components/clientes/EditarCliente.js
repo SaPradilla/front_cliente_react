@@ -15,6 +15,7 @@ function EditarCliente () {
         email:'',
         telefono:'',
     });
+    
     const actualizarState = a =>{
         
         datosCliente({
