@@ -55,7 +55,7 @@ function Productos() {
                         <div className="info-producto">
                             <p className="nombre">{producto.nombre}</p>
                             <p className="precio">{producto.precio}</p>
-                            <img src={`http://localhost:7060/uploads/${producto.imagen}`} alt={producto.nombre} />
+                            <img src={producto.imagen} alt={producto.nombre} />
                         </div>
                         <div className="acciones">
                             <NavLink to={`/editar-producto/${producto._id}`} className="btn btn-azul">

@@ -21,7 +21,7 @@ function NuevoProducto() {
     };
 
     const validarForm = () =>{
-        const {nombre,precio,imagen} = producto
+        const {nombre,precio} = producto
         // let validacion = !nombre.length || !apellido.length || !empresa.length || !email.length || !telefono.length
         const validacionCampoVacio = [nombre,precio].some(campo => !campo.length);
         return validacionCampoVacio

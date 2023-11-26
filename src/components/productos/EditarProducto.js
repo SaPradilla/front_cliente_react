@@ -112,7 +112,7 @@ function EditarProducto() {
                             producto.imagen && (
                                 <img
                                 className="image-product"
-                                src={`http://localhost:7060/uploads/${producto.imagen}`}
+                                src={producto.imagen}
                                 alt={producto.nombre}
                                 />
                             )

@@ -51,39 +51,36 @@ function EditarPedido() {
         datosPedido({
             ...pedido,
             pedido: selectedOptions.map((producto) => ({
-                ...producto,
-                cantidad: 1, // Inicializamos la cantidad en 1 por defecto
+                ...producto 
             })),
         });
     };
+    
     const handleCantidadChange = (index, cantidad) => {
-        const nuevosProductos = [...pedido.productos];
+        const nuevosProductos = [...pedido.pedido];
         nuevosProductos[index].cantidad = cantidad;
         datosPedido({
             ...pedido,
-            productos: nuevosProductos,
+            pedido: nuevosProductos,
         });
     };
 
     const calcularTotal = () => {
+        console.log('se ejecuto calcularTotal')
         const total = pedido.pedido.reduce(
             (acumulador, producto) => acumulador + producto.cantidad * producto.precio,
             0
         );
         datosPedido({
             ...pedido,
-            total,
+            total:total,
         });
     };
 
-    const agregarPedido = async (a) => {
+    const actualizarPedido = async (a) => {
         a.preventDefault()
-
         try {
-            // Convertir la lista de productos formateados a una cadena JSON
-            // const productosJSON = JSON.stringify(productosData);
-            
-            const productosData = pedido.productos.map((producto) => ({
+            const productosData = pedido.pedido.map((producto) => ({
                 producto: producto.value,
                 cantidad: producto.cantidad,
             }));
@@ -92,15 +89,16 @@ function EditarPedido() {
                 pedido: productosData,
                 total: pedido.total
             }
-            console.log(pedidoData)
-            const nuevoPedido = await clienteAxios.post('/pedidos', pedidoData)
 
-            console.log(nuevoPedido.data.Pedido)
+            const nuevoPedido = await clienteAxios.put(`/pedidos/${id}`, pedidoData)
+
+            console.log(nuevoPedido.data)
+
             if (nuevoPedido.data.code === 11000) {
                 Swal.fire({
                     icon: "error",
                     title: 'Hubo un Error :/',
-                    text: 'El cliente ya esta Registrado',
+                    text: 'No se pudo actualizar el pedido',
                     timer: 1500,
                     confirmButtonColor: "#66bb6a",
 
@@ -108,7 +106,7 @@ function EditarPedido() {
                 return
             }
             Swal.fire(
-                "Se Creo Correctamente",
+                "Actualizado correctamente Correctamente",
                 nuevoPedido.data.msg,
                 "success"
             )
@@ -130,10 +128,11 @@ function EditarPedido() {
 
         const productosPedidoFormat = pedidoApi.data.Pedido.pedido.map((productoPedido) => ({
             value: productoPedido.producto._id,
+            precio: productoPedido.producto.precio,
             label: `${productoPedido.producto.nombre} $${productoPedido.producto.precio}`,
             cantidad: productoPedido.cantidad,
-          }));
-          
+        }));
+
           datosPedido({
             ...pedidoApi.data.Pedido,
             pedido: productosPedidoFormat,
@@ -141,9 +140,6 @@ function EditarPedido() {
 
           datosClienteAnterior(pedidoApi.data.Pedido.cliente)
 
-        // console.log(pedidoApi.data)
-        console.log(pedido)
-        console.log(productosApi.data)
 
     }
 
@@ -152,28 +148,21 @@ function EditarPedido() {
         consultar()
         validarDisponibles()
     }, []);
-
-    // useEffect(()=>{
-    //     const consultaApi = async () =>{
-    //         const consultar = await clienteAxios.get(`/pedidos/${id}`)
-    //         datosPedido(consultar.data.Pedido)
-    //     }
-    //     consultaApi()
-    // },[])
     useEffect(() => {
         calcularTotal();
     }, [pedido.pedido]);
+
     return (
         <div>
             <h2>Editar Pedido</h2>
 
-            <form onSubmit={agregarPedido}>
+            <form onSubmit={actualizarPedido}>
                 <legend>Llena todos los campos</legend>
 
                 <div className="campo">
                     <div>
                         
-                        <label>Cliente:</label>
+                        <label>Cliente Anterior:</label>
                     
                         <select name="cliente">
    
@@ -226,37 +215,13 @@ function EditarPedido() {
                     />
                 </div>
                 ))}
-                {/* <div className="campo">
-                    <label>Producto:</label>
-                    
-                    <Select
-                        options={productos.map((producto) => ({
-                            value: producto._id,
-                            label: `${producto.nombre} $${producto.precio}`,
-                            precio: producto.precio,
-                        }))}
-                        value={pedido.productos}
-                        onChange={handleProductosChange}
-                        isMulti
-                    />
-                </div>
-                    {pedido.pedido.producto.map((producto, index) => (
-                        <div key={index} className="campo">
-                            <label>Cantidad para {producto.label}:</label>
-                            <input
-                                type="number"
-                                value={producto.cantidad}
-                                onChange={(e) => handleCantidadChange(index, e.target.value)}
-                            />
-                        </div>
-                    ))} */}
                 <div className="campo">
                     <label>Total:</label>
-                    {/* <input type="number" name="total" value={pedido.total || ''} readOnly /> */}
+                    <input type="number" name="total" value={pedido.total || ''} readOnly />
                 </div>
 
                 <div className="enviar">
-                    <input type="submit" className="btn btn-azul" value="Agregar Producto" />
+                    <input type="submit" className="btn btn-azul" value="Actulizar Pedido" />
                 </div>
             </form>
         </div>

@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import clienteAxios from "../../config/axios";
+import Swal from "sweetalert2";
 
 function Pedidos() {
   const [pedidos, datosPedidos] = useState([]);
@@ -9,6 +10,30 @@ function Pedidos() {
     const consultar = await clienteAxios.get('/pedidos')
     datosPedidos(consultar.data.Pedidos)
   }
+  const eliminarPedido = id =>{
+    Swal.fire({
+        title: "Estas Seguro?",
+        text: "Esta accion borrará PARA SIEMPRE el pedido",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#66bb6a",
+        cancelButtonColor: "#A01C48",
+        confirmButtonText: "Si, Borrar!",
+        cancelButtonText: "Cancelar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+            clienteAxios.delete(`/pedidos/${id}`)
+            .then( res =>{
+                Swal.fire(
+                    "Eliminado",
+                    res.data.msg,
+                    "success"
+                  );
+            })
+         
+        }
+      });
+}
   useEffect(() => {
     consultaApi()
   }, [pedidos]);
@@ -45,7 +70,7 @@ function Pedidos() {
                 <i className="fas fa-pen-alt"></i>
                 Editar Pedido
               </NavLink>
-              <button type="button" className="btn btn-rojo btn-eliminar">
+              <button type="button" className="btn btn-rojo btn-eliminar" onClick={() => eliminarPedido(pedido._id)}>
                 <i className="fas fa-times"></i>
                 Eliminar Pedido
               </button>

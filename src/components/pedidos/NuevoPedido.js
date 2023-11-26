@@ -167,7 +167,7 @@ function NuevoPedido() {
                 </div>
 
                 <div className="enviar">
-                    <input type="submit" className="btn btn-azul" value="Agregar Producto" disabled={validarForm()} />
+                    <input type="submit" className="btn btn-azul" value="Agregar Pedido" disabled={validarForm()} />
                 </div>
             </form>
         </div>
